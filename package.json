@@ -1,0 +1,22 @@
+{
+  "name": "carte",
+  "version": "0.1.0",
+  "description": "Carte representant les utilisations des données LAS",
+  "main": "server.js",
+  "scripts": {
+    "start": "npx pm2 start server.js --watch"
+  },
+  "author": "Théo JULIEN",
+  "license": "MIT",
+  "dependencies": {
+    "express": "^4.16.3",
+    "pug": "^2.0.3",
+    "proj4" : "^2.0.3",
+    "socket.io": "^2.2.0",
+    "fs":"^0.0.2",
+    "@turf/turf":"^5.1.6"
+  },
+  "devDependencies": {
+    "pm2": "^2.10.3"
+  }
+}
