@@ -29,10 +29,15 @@ html
 		var data = !{data}
 		console.log(data)
 		for (i = 0; i < data.donnes.length; i++) { 		  
-		  var polygon = L.polygon(data.donnes[i].pts).setStyle({color :  'white',fillColor :getColor(data.donnes[i].use),weight : 2,fillOpacity: 0.37}).addTo(map).bindPopup(data.donnes[i].use.toString()).on({mouseover: highlightFeature,mouseout: resetHighlight});
+		  var polygon = L.polygon(data.donnes[i].pts).setStyle({color :  'white',fillColor :getColor(data.donnes[i].use),weight : 2,fillOpacity: 0.37}).addTo(map).bindPopup(data.donnes[i].use.toString()).on({mouseover: highlightFeature,mouseout: resetHighlight,click : clicke})
+		  polygon.donne = data.donnes[i];
 		}
 		function highlightFeature(e) {
 		    info.update(e.target._popup._content);
+		}
+		function clicke(e) {
+		    console.log(e.target.donne.id);
+		    window.location='/graphe?id='+e.target.donne.id;
 		}
 		function resetHighlight(e) {
 		    info.update();

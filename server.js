@@ -21,7 +21,7 @@ var minMax;
 fs.readFile(__dirname + '/datas/data.json', 'utf8', function(err, contents) {    
     result = contents.toString().replace(/&quot;/g,'"');
     json = JSON.parse(result);
-    console.log(json.liste.length);  
+    console.log(json.liste.length + " carres");  
     data = convert_carre(json); 
     
 });
@@ -41,9 +41,11 @@ app.get('/', (req, res) => {
 });
 
 
-app.get('/graphe', (req, res) => {    
+app.get('/graphe', (req, res) => {   
+    const dt = data.donnes.find(p => p.id === req.query.id); 
     res.render('graphe', {
         title: 'graphe',
+        data : JSON.stringify(data),
     });
 });
 
@@ -117,6 +119,7 @@ function convert_carre(json)
             carre.splice(-1,1)
             data.donnes.push({
                 pts : carre,
+                id : element.id,
                 use : element.utilization,
             })   
         }
