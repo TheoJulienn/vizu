@@ -38,7 +38,7 @@ script.
     svg.append("g")
     .call(d3.axisLeft(y));
     // Compute kernel density estimation
-    var kde = kernelDensityEstimator(kernelEpanechnikov(9), x.ticks(10))
+    var kde = kernelDensityEstimator(kernelEpanechnikov(7), x.ticks(10))
     var density =  kde(tab)
     console.log(density)
     // Plot the area
