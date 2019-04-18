@@ -10,43 +10,32 @@ html
 	main
 	#map
 	script.
-		function getColor(d) {
-		    return d > 1500 ? '#800026' :
-		           d > 1250  ? '#BD0026' :
-		           d > 1000  ? '#E31A1C' :
-		           d > 750  ? '#FC4E2A' :
-		           d > 500  ? '#FD8D3C' :
-		           d > 250  ? '#FEB24C' :
-		           d > 100   ? '#FED976' :
-		                      '#FFEDA0';
-		}
+		var t;
 		var osmUrl='http://{s}.www.toolserver.org/tiles/bw-mapnik/{z}/{x}/{y}.png';
 		var osmAttrib='Map data © <a href="http://openstreetmap.org">OpenStreetMap</a> contributors';
-		// Create variable to hold map element, give initial settings to map
 		var osm = new L.TileLayer(osmUrl, {minZoom: 0, maxZoom: 20, attribution: osmAttrib});
-		// Add OpenStreetMap tile layer to map element
 		map = L.map('map', {center: [46.5, 6.4194],layers: osm,zoom: 6.45,zoomControl:false});
 		var data = !{data}
-		console.log(data)
-		for (i = 0; i < data.donnes.length; i++) { 		  
-		  var polygon = L.polygon(data.donnes[i].pts).setStyle({color :  'white',fillColor :getColor(data.donnes[i].use),weight : 2,fillOpacity: 0.37}).addTo(map).bindPopup(data.donnes[i].use.toString()).on({mouseover: highlightFeature,mouseout: resetHighlight,click : clicke})
-		  polygon.donne = data.donnes[i];
-		}
-		function highlightFeature(e) {
-		    info.update(e.target._popup._content);
-		}
-		function clicke(e) {
-		    console.log(e.target.donne.id);
-		    window.location='/graphe?id='+e.target.donne.id;
-		}
-		function resetHighlight(e) {
-		    info.update();
-		}
+	
+		var ranger = L.control({position: 'bottomleft'});
+
+		ranger.onAdd = function (map) {
+
+		    var div = L.DomUtil.create('div', 'ranger legend')
+
+		    div.innerHTML += '<div class="slidecontainer"><input class="slider" id="myRange" type="range" min="1" max="12" value="1" /></div>'
+		    return div;
+		};
+
+
+
+
+
 		var legend = L.control({position: 'bottomright'});
 		legend.onAdd = function (map) {
 
 		    var div = L.DomUtil.create('div', 'info legend'),
-		        grades = [0, 100, 250, 500, 750, 1000, 1250, 1500],
+		        grades = [0, 100, 250, 500, 750, 1000, 1250, 1500,1750],
 		        labels = [];
 
 		    // loop through our density intervals and generate a label with a colored square for each interval
@@ -61,19 +50,79 @@ html
 		var info = L.control();
 
 		info.onAdd = function (map) {
-		    this._div = L.DomUtil.create('div', 'info'); // create a div with a class "info"
+		    this._div = L.DomUtil.create('div', 'info');
 		    this.update();
 		    return this._div;
 		};
 
-		// method that we will use to update the control based on feature properties passed
 		info.update = function (props) {
-		    this._div.innerHTML = '<h4>Téléchargement depuis la semaine dernière</h4>' +  (props ?
+		    this._div.innerHTML = '<h4>Téléchargement depuis la semaine du</h4>' +  (props ?
 		        props
 		        : 'Survolez une zone');
 		};
 
 		info.addTo(map);
-
 		legend.addTo(map);
+		ranger.addTo(map);
+		var range = document.getElementById('myRange')
+		range.oninput = function(){console.log(reload_map(this.value-1))}
+
+
+		function getColor(d) {
+		    return	d > 1750 ? '#004529' :
+					d > 1500 ? '#006837' :
+					d > 1250  ? '#238443' :
+					d > 1000  ? '#41ab5d' :
+					d > 750  ? '#78c679' :
+					d > 500  ? '#addd8e' :
+					d > 250  ? '#d9f0a3' :
+					d > 100   ? '#f7fcb9' :
+								'#ffffe5';
+		}
+		function highlightFeature(e) {
+		    info.update(e.target.uses__[t]);
+		}
+		function clicke(e) {
+		    console.log(e.target);
+		    //window.location='/graphe?id='+e.target.id__;
+		}
+		function resetHighlight(e) {
+		    info.update();
+		}
+
+		function reload_map(t)
+		{
+			clearMap()
+			dataOnMap(t)
+
+		}
+
+		function clearMap() {
+		    for(i in map._layers) {
+		        if(map._layers[i]._path != undefined) {
+		            try {
+		                map.removeLayer(map._layers[i]);
+		            }
+		            catch(e) {
+		                console.log("problem with " + e + map._layers[i]);
+		            }
+		        }
+		    }
+		}
+
+		function dataOnMap(t)
+		{
+			t=t
+			for (i = 0; i < data.donnes.length; i++) { 		  
+				var polygon = L.polygon(data.donnes[i].pts)
+				.setStyle({color :  'white',fillColor :getColor(data.donnes[i].use[t]),weight : 0.7,fillOpacity: 0.37})
+				.addTo(map)
+				.bindPopup(data.donnes[i].use[t].toString())
+				.on({mouseover: highlightFeature,mouseout: resetHighlight,click : clicke})
+				polygon.id__ = data.donnes[i].id;
+				polygon.uses__ = data.donnes[i].use[t];
+			}
+		}
+
+		
 		

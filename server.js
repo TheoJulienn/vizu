@@ -1,11 +1,13 @@
 const express = require('express');
 const proj4 = require("proj4")
-const test = require('./france2.json');
+const test = require('./france.json');
 const fs = require('fs');
 const app = express();
 var turf = require('@turf/turf');
 //on va voir si les points sont dans le polygon correspondant a la france metropolitaine
 var  tab_france = test.features[0].geometry.coordinates[0]
+
+
 proj4.defs([
     ["EPSG:2154","+proj=lcc +lat_1=49 +lat_2=44 +lat_0=46.5 +lon_0=3 +x_0=700000 +y_0=6600000 +ellps=GRS80 +towgs84=0,0,0,0,0,0,0 +units=m +no_defs"],
     ["EPSG:4326","+title=WGS 84 (long/lat) +proj=longlat +ellps=WGS84 +datum=WGS84 +units=degrees"],
@@ -18,10 +20,11 @@ var minMax;
 
 
 
-fs.readFile(__dirname + '/datas/data.json', 'utf8', function(err, contents) {    
+fs.readFile(__dirname + '/datas/data2.json', 'utf8', function(err, contents) {    
     result = contents.toString().replace(/&quot;/g,'"');
     json = JSON.parse(result);
-    console.log(json.liste.length + " carres");  
+    console.log(json.liste.length + " carres");
+    console.log(json.liste[0].dates.length) 
     data = convert_carre(json); 
     
 });
@@ -46,6 +49,13 @@ app.get('/graphe', (req, res) => {
     res.render('graphe', {
         title: 'graphe',
         data : JSON.stringify(data),
+    });
+});
+
+
+app.get('/test', (req, res) => {   
+    res.render('test', {
+        title: 'test',
     });
 });
 
@@ -98,6 +108,7 @@ function convert_carre(json)
     var data = {
         donnes : []
     }
+    console.log(json.liste.length)
 
     json.liste.forEach(function(element) {
         var x0 = element.coordinates.x0;
@@ -114,6 +125,7 @@ function convert_carre(json)
         }
       
     });
+    console.log(data.donnes.length)
     return data
 }
 

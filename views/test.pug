@@ -1,0 +1,75 @@
+doctype html
+html
+	meta(charset='utf-8')
+	// Load d3.js
+	script(src='http://d3js.org/d3.v4.js')
+	script(type='text/javascript' src='/views/trackball.js')
+	// Create a div where the graph will take place
+#container
+script(src='http://mrdoob.github.com/three.js/build/three.min.js')
+script.
+	var renderer, scene, camera, mesh;
+	var distance = 100;
+
+	init();
+	controls = new THREE.TrackballControls( camera );
+	controls.target.set( 0, 0, 0 )
+
+	function init(){
+	// on initialise le moteur de rendu
+	renderer = new THREE.WebGLRenderer();
+
+	// si WebGL ne fonctionne pas sur votre navigateur vous pouvez utiliser le moteur de rendu Canvas à la place
+	// renderer = new THREE.CanvasRenderer();
+	renderer.setSize( window.innerWidth, window.innerHeight );
+	document.getElementById('container').appendChild(renderer.domElement);
+
+	// on initialise la scène
+	scene = new THREE.Scene();
+
+	// on initialise la camera que l’on place ensuite sur la scène
+	camera = new THREE.PerspectiveCamera(50, window.innerWidth / window.innerHeight, 1, 10000 );
+	camera.position.set(0, 0, 1000);
+	scene.add(camera);
+
+	// on créé un  cube au quel on définie un matériau puis on l’ajoute à la scène 
+	var geometry = new THREE.CubeGeometry( 200, 200, 200 );
+	var material = new THREE.MeshBasicMaterial( { color: 0xff0000, wireframe: true } );
+	mesh = new THREE.Mesh( geometry, material );
+	scene.add( mesh );
+	createRectangles(8)
+	renderer.render( scene, camera );
+	camera.lookAt( scene.position )
+	
+	}
+
+
+
+
+
+
+	function createRectangles(n)
+	{
+	//create empty 3d object — group for future spheres
+	rect = new THREE.Object3D();
+	//randomly create 80 spheres by loop
+	for (var i = 0; i < 80; i++) {
+	var rectangle = new THREE.CubeGeometry(4, Math.random() * 12, Math.random() * 12);
+	var material = new THREE.MeshBasicMaterial( { color: 0xff0000, wireframe: true } );
+	  //creating the mesh and add primitive and material
+	var particle = new THREE.Mesh(rectangle, material);
+	//randomly set position and scale
+	particle.position.x = Math.random() * distance * 10;
+	particle.position.y = Math.random() * -distance * 6;
+	particle.position.z = Math.random() * distance * 4;
+	particle.rotation.y = Math.random() * 2 * Math.PI;
+	particle.scale.x = particle.scale.y = particle.scale.z = Math.random() * 12 + 5;
+	//add particle to the spheres group
+	rect.add(particle);
+	}
+	rect.position.y = 0;
+	rect.position.x = 0;
+	rect.position.z = 1000;
+	rect.rotation.y = Math.PI * 600;
+	scene.add(rect);
+	}
